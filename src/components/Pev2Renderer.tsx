@@ -152,7 +152,12 @@ export function Pev2Renderer({ planSource, appearance }: { planSource: string; a
         .plan-stats .stat-dropdown-container { padding:18px !important; }
       }
       @media (min-width: 700px) and (max-width: 800px) { #pev2-root { height:720px; } }
-      #pev2-root[data-appearance="dark"] { color-scheme:dark; background:#111a22 !important; color:#dce6ed; }
+      #pev2-root[data-appearance="dark"] { color-scheme:dark; background:#111a22 !important; color:#dce6ed; --bs-body-color:#dce6ed; --bs-body-bg:#17232e; --bs-secondary-color:#b9cbd6; --bs-tertiary-color:#b9cbd6; --bs-border-color:#587080; --bs-link-color:#9bd9f5; --bs-secondary-bg:#203341; --bs-tertiary-bg:#203341; }
+      #pev2-root[data-appearance="dark"] :where(.card,.card-body,.card-header,.dropdown-menu,.list-group-item,.modal-content,.popover) { background-color:#203341 !important; color:#edf4f7 !important; border-color:#587080 !important; }
+      #pev2-root[data-appearance="dark"] :where(.text-muted,.text-secondary,.text-body-secondary,.text-body-tertiary,small) { color:#b9cbd6 !important; }
+      #pev2-root[data-appearance="dark"] :where(input,select,textarea,.form-control,.form-select) { background-color:#101a22 !important; color:#edf4f7 !important; border-color:#7590a1 !important; }
+      #pev2-root[data-appearance="dark"] :where(.dropdown-item,.btn-outline-secondary,.btn-light) { color:#edf4f7 !important; background-color:#203341 !important; border-color:#7590a1 !important; }
+      #pev2-root[data-appearance="dark"] :where(.dropdown-item:hover,.dropdown-item:focus) { background-color:#315264 !important; }
       #pev2-root[data-appearance="dark"] .plan-container,
       #pev2-root[data-appearance="dark"] .plan-container .tab-content,
       #pev2-root[data-appearance="dark"] .tab-pane,
