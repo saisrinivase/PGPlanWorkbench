@@ -4,6 +4,8 @@ Free, open-source PostgreSQL execution-plan review application. Inspect the plan
 
 ## Run locally
 
+Application version: **1.0.0**. Source is available; a versioned GitHub Release and hosted release-gate validation are not yet published. Local validation is not a security certification.
+
 Download the complete source ZIP using GitHub's **Code → Download ZIP**, or clone the repository. Extract it and open a terminal in the folder containing `package.json`. Individual files are not a runnable download. Use Node.js 24 and npm.
 
 ```sh
@@ -38,4 +40,20 @@ Only application source, required icons/notices, build helpers and locked depend
 
 ## License and attribution
 
-PostgreSQL License. Existing attribution and third-party notices are retained in LICENSE and public/THIRD_PARTY_NOTICES.md.
+Released as free, open-source software under the [PostgreSQL License](LICENSE). Existing copyright notices are preserved.
+
+### Thanks to PEV2 and Dalibo
+
+PGPlanWorkbench uses **[PEV2 1.25.0](https://github.com/dalibo/pev2)**, the PostgreSQL execution-plan visualization library maintained by **Dalibo and its contributors**. Thank you for making this visualization foundation available to the PostgreSQL community.
+
+PEV2 powers the graphical plan workspace. PGPlanWorkbench adds evidence-led findings and before/after validation around it. Our version-guarded build transform batches layout measurements and adjusts the dense-tree zoom floor; these are local integration changes, not upstream features. This project does not imply endorsement by Dalibo or the PEV2 contributors.
+
+See [Third-Party Notices](public/THIRD_PARTY_NOTICES.md) for PEV2's license and other acknowledgements.
+
+## Technology
+
+React and TypeScript provide the application interface; Vue and PEV2 provide plan visualization. Zod validates imported evidence. Vite builds the app; Bootstrap, Font Awesome and IBM Plex provide supporting styles, icons and fonts. Exact resolved versions are recorded in `package-lock.json`.
+
+## Feedback
+
+Use [GitHub Issues](https://github.com/saisrinivase/PGPlanWorkbench/issues) for bugs and suggestions. Share steps and expected behavior, not production plans, database identifiers, credentials or unredacted screenshots. Prefer a reproduction generated from a disposable local database.
