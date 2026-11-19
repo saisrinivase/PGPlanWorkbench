@@ -183,4 +183,17 @@ body:has(.shell[data-appearance="dark"]) { background: #111a22 !important; }
 .shell[data-appearance="dark"] .plan-reference .reference-heading .lede { color:#bac8d1!important; }
 .shell[data-appearance="dark"] .plan-reference .reference-search { color:#c5d6e0!important; }
 
+/* Workload Triage: scope surfaces as well as text to the selected appearance. */
+.shell[data-appearance="dark"] .workload-triage :is(.triage-heading,.triage-intake>section,.triage-intake>aside,.triage-table-wrap,.triage-next>div){background:#17232e!important;border-color:#405363!important;color:#dce6ed!important}
+.shell[data-appearance="dark"] .workload-triage :is(p,dd,label span){color:#bac8d1!important}
+.shell[data-appearance="dark"] .workload-triage :is(h1,h2,strong,label,dt){color:#edf4f7!important}
+.shell[data-appearance="dark"] .workload-triage textarea::placeholder{color:#9fb4c2!important;opacity:1}
+.shell[data-appearance="dark"] .workload-triage .triage-boundary{background:#193a2d!important;color:#dce6ed!important}
+.shell[data-appearance="dark"] .workload-triage .triage-table :is(th,td){background:#17232e!important;border-color:#405363!important;color:#dce6ed!important}
+.shell[data-appearance="dark"] .workload-triage .triage-table th{background:#203341!important}
+.shell[data-appearance="dark"] .workload-triage .triage-table td:first-child strong{background:#28566d!important}
+.shell[data-appearance="dark"] .workload-triage .triage-error{color:#ffb4b4!important}
+.shell[data-appearance="dark"] .workload-triage button:disabled{background:#293b48!important;color:#b6c5d0!important;opacity:1}
+.shell[data-appearance="dark"] .workload-triage :is(button,textarea):focus-visible{outline:3px solid #8bd0ef!important;outline-offset:3px}
+
 @media(prefers-reduced-motion:reduce){.appearance-switch-track i{transition:none}}
