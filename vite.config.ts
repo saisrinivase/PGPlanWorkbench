@@ -1,0 +1,27 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { pev2LayoutPatch } from "./scripts/pev2-layout-patch.mjs";
+
+export default defineConfig({
+  plugins: [pev2LayoutPatch(), react()],
+  // Keep development and production on the same reviewed renderer transform.
+  optimizeDeps: { exclude: ["pev2"] },
+  define: {
+    __VUE_OPTIONS_API__: true,
+    __VUE_PROD_DEVTOOLS__: false,
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
+  },
+  preview: { headers: {
+    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+  } },
+  worker: { format: "es" },
+  build: {
+    rollupOptions: {
+      output: { manualChunks: { pev2: ["pev2", "vue"] } },
+    },
+  },
+});
+
+undefined

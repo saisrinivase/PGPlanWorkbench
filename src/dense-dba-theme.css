@@ -1,0 +1,102 @@
+/* Classic DBA Report, approved preview #2. Final shared presentation layer. */
+:root{
+  font-family:Verdana,Arial,sans-serif;
+  --blue:#245f96;
+  --navy:#152f49;
+  --soft:#e4edf6;
+  --muted:#5d6d80;
+  --line:#c7d1dc;
+  --reference-blue:#245f96;
+  --reference-canvas:#e9edf2;
+  --reference-line:#c7d1dc;
+}
+html,body,button,input,textarea,select{font-family:Verdana,Arial,sans-serif!important}
+html,body{background:#e9edf2;color:#15273b}
+.shell>header{background:#fff;border-bottom-color:#c7d1dc;box-shadow:none}
+.shell>header .brand,.shell>header .brand b{color:#174d7d}
+.shell>header .brand-mark{background:#1f4f7d}
+.intake-console,.shell:has(.command-nav)>main{background:#e9edf2!important}
+.shell:has(.command-nav)>.command-nav{padding-inline:16px!important;background:#eef3f7!important;border-bottom-color:#c7d1dc!important}
+.shell:has(.command-nav)>.command-nav>button{font-family:Verdana,Arial,sans-serif!important;color:#425c73!important}
+.shell:has(.command-nav)>.command-nav>button:hover{background:#e5edf4!important;color:#174d7d!important}
+.shell:has(.command-nav)>.command-nav>button.active{border-bottom-color:#245f96!important;color:#174d7d!important}
+.command-nav button.active .nav-index{color:#245f96}
+.shell:has(.command-nav)>main{padding-inline:0!important;background:#e9edf2!important}
+.shell:has(.command-nav)>main>.recommendations-workbench,.shell:has(.command-nav)>main>.planner-diagnostics,.shell:has(.command-nav)>main>.validation-workbench,.shell:has(.command-nav)>main>.context-workbench{width:100%!important;max-width:none!important;margin-inline:0!important}
+.environment-drift{width:100%;max-width:none;margin-inline:0}
+.workspace-panel,.diagnosis-workspace{color:#15273b}
+.workspace-panel h1,.workspace-panel h2,.workspace-panel h3,.diagnosis-workspace h1,.diagnosis-workspace h2,.diagnosis-workspace h3{color:#152f49}
+.section-kicker,.eyebrow{color:#245f96}
+.lede,.view-heading p{color:#5d6d80}
+.recommendations-heading aside,.context-boundary,.validation-heading aside,.statistics-qualification>header{background:#e4edf6;border-color:#6f98bd}
+.evidence-editor,.plan-preview,.console-history,.recommendation-section,.planner-section,.planner-explain,.statistics-qualification,.context-diagnostic-boundary,.context-preview,.environment-drift,.validation-stage,.validation-verdict{border-color:#c7d1dc;box-shadow:none}
+.editor-toolbar,.environment-drift>header,.estimate-head,.context-collector,.planner-summary,.context-state,.validation-stage>header{background:#eef3f7}
+.finding-investigation>summary{min-height:52px}
+.finding-title strong{font-size:13px}
+.finding-title small,.finding-investigation-body dd,.evidence-classifications p,.finding-action small,.candidate-experiment-list>details>summary em{font-size:11px}
+.finding-investigation>summary>.severity,.finding-disclosure,.finding-investigation[open] .finding-disclosure::after,.finding-action span,.finding-guardrails>summary,.finding-investigation-body dt,.evidence-classifications span,.candidate-experiment-list>details>summary small,.candidate-experiment-list>details>summary>b{font-size:9px}
+.finding-action strong,.evidence-classifications strong,.candidate-experiment-list>details>summary strong{font-size:12px}
+.recommendations-heading .lede,.planner-heading .lede,.validation-heading .lede,.context-heading .lede{font-size:13px}
+.planner-access-item .planner-operation strong,.validation-stage>header h3{font-size:12px}
+button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible{outline-color:rgba(36,95,150,.3)}
+@media(max-width:760px){.shell:has(.command-nav)>main{padding-inline:0!important}.shell:has(.command-nav)>.command-nav{padding-inline:8px!important}}
+
+/* Dense workbench treatment: compact scan order, stronger hierarchy, no decorative space. */
+.recommendations-workbench,.planner-diagnostics{padding:10px 12px 24px!important}
+.recommendations-heading,.planner-heading{gap:12px!important;padding-bottom:8px!important;align-items:center!important}
+.recommendations-heading{grid-template-columns:minmax(0,1fr) minmax(260px,360px)!important}
+.planner-heading{grid-template-columns:minmax(0,1fr) 250px!important}
+.recommendations-heading h2,.planner-heading h2{margin:2px 0!important;font-size:20px!important;line-height:1.1!important}
+.recommendations-heading .lede,.planner-heading .lede{max-width:105ch!important;font-size:11px!important;line-height:1.4!important}
+.recommendations-heading aside{padding:7px 9px!important}
+.recommendation-section,.planner-section,.planner-reading-guide,.planner-qualification{margin-top:6px!important}
+.recommendation-section>header,.planner-section>header{min-height:32px!important;padding-inline:10px!important}
+.finding-investigation>summary{min-height:40px!important;padding:5px 10px!important}
+.finding-investigation-body{padding:7px 10px 8px 108px!important}
+.finding-action{padding:6px 8px!important}
+.evidence-classifications{margin:6px 0!important}
+.evidence-classifications>div{padding:7px 8px!important}
+.finding-guardrails{margin-top:6px!important}
+.finding-guardrails>summary{padding:6px 8px!important}
+.planner-summary div{padding:6px 8px!important}
+.planner-summary strong{font-size:13px!important}
+.planner-reading-guide>div{padding:7px 9px!important}
+.planner-access-item>summary{min-height:40px!important;padding:5px 10px!important}
+.planner-access-body>div{padding:7px 9px!important}
+.planner-access-body dl>div{padding:7px 9px!important}
+.planner-qualification>header,.planner-qualification .statistics-qualification-grid>div{padding:7px 9px!important}
+.estimate-head,.estimate-row{min-height:30px!important}
+.estimate-head span,.estimate-row span{padding:6px 8px!important}
+@media(max-width:850px){.recommendations-heading,.planner-heading{grid-template-columns:1fr!important}.recommendations-workbench,.planner-diagnostics{padding:8px!important}.finding-investigation-body{padding-left:8px!important}}
+
+/* Shared font rules prevent older workspace-specific fonts from leaking through. */
+.shell,.shell :where(p,span,strong,b,em,small,label,dt,dd,th,td,h1,h2,h3,h4,summary,a,button,input,select){font-family:Verdana,Arial,sans-serif!important}
+.shell :where(p,dd,td,label,input,select,button,summary){font-size:14px!important;line-height:1.5!important}
+.shell :where(small,dt,th,.section-kicker,.eyebrow,.severity,.finding-disclosure){font-size:12px!important;line-height:1.5!important;letter-spacing:normal!important}
+.shell :where(pre,code,textarea),.shell :where(pre,code) *{font-family:ui-monospace,SFMono-Regular,Consolas,monospace!important;font-size:13px!important;line-height:1.5!important}
+.shell :where(h2){font-size:20px!important;line-height:1.3!important}
+.shell :where(h3){font-size:15px!important;line-height:1.4!important}
+.shell,.shell:has(.command-nav)>main,.intake-console{background:#fff!important;color:#202b35}
+.shell>header{background:#edf2f7!important;box-shadow:none!important}
+.shell:has(.command-nav)>.command-nav{background:#fff!important;padding-inline:12px!important}
+.shell:has(.command-nav)>.command-nav>button{padding:10px 14px!important;border-radius:0!important}
+.shell:has(.command-nav)>.command-nav>button.active{background:#e8eef5!important;color:#1557a0!important}
+.recommendations-workbench,.planner-diagnostics,.validation-workbench,.context-workbench{padding:12px!important;background:#fff!important}
+.shell :where(.lede){font-size:14px!important;line-height:1.5!important;max-width:100ch!important}
+.shell :where(.finding-title strong,.finding-action strong,.evidence-classifications strong,.planner-operation strong){font-size:14px!important;line-height:1.5!important}
+.shell :where(.finding-title small,.finding-action small,.evidence-classifications p,.candidate-experiment-list em){font-size:13px!important;line-height:1.5!important}
+.shell :where(.finding-investigation>summary,.planner-access-item>summary){padding:8px 10px!important;min-height:38px!important}
+.shell .finding-investigation[open] .finding-disclosure{font-size:0!important}
+.shell .finding-investigation[open] .finding-disclosure::after{font:12px/1.5 Verdana,Arial,sans-serif!important}
+.shell :where(.finding-title,.planner-operation,.context-heading,.validation-heading){min-width:0;overflow-wrap:anywhere}
+.finding-investigation-body{padding:10px!important}
+.evidence-classifications{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.evidence-classifications>div{padding:10px!important;border:1px solid #d7dce1!important}
+.shell :where(table){border-collapse:collapse}
+.shell :where(th,td){padding:7px 10px!important;border:1px solid #d7dce1!important;font-variant-numeric:tabular-nums}
+.shell :where(th,.recommendation-section>header,.planner-section>header,.estimate-head,.validation-stage>header){background:#edf2f7!important}
+.shell :where(.estimate-row,.estimate-head){min-height:36px!important}
+.shell :where(.estimate-row>span,.estimate-head>span){border-right:1px solid #d7dce1;padding:7px 10px!important}
+.shell :where(.recommendation-section,.planner-section,.validation-stage,.context-preview){border-radius:0!important;box-shadow:none!important}
+@media(max-width:850px){.evidence-classifications{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:600px){.evidence-classifications{grid-template-columns:1fr!important}.shell:has(.command-nav)>.command-nav>button{padding:10px!important}.shell :where(input,textarea,select){font-size:16px!important}}

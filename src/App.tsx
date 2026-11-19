@@ -1,0 +1,106 @@
+import { useEffect, useState } from "react";
+import { analyzeOffThread } from "./analyze-client.ts";
+import { Brand } from "./components/Brand.tsx";
+import { IntakeV06 as Intake } from "./components/IntakeV06.tsx";
+import { DiagnosisWorkspace } from "./components/DiagnosisWorkspace.tsx";
+import { FixValidationView } from "./components/WorkbenchViews.tsx";
+import type { Analysis } from "./types.ts";
+import { clearCases, deleteCase, listCases, saveCase, type StoredCase } from "./case-store.ts";
+import type { DatabaseContext } from "./database-context.ts";
+import { DatabaseContextView } from "./components/DatabaseContextView.tsx";
+import { StatisticsPlannerView } from "./components/StatisticsPlannerView.tsx";
+import { ContextualFindingsView } from "./components/ContextualFindingsView.tsx";
+import { EnvironmentDriftView } from "./components/EnvironmentDriftView.tsx";
+import { WorkloadTriageView } from "./components/WorkloadTriageView.tsx";
+import { PlanReferenceView } from "./components/PlanReferenceView.tsx";
+
+type Tab = "diagnosis" | "validation" | "recommendations" | "context" | "planner" | "reference";
+type Appearance = "light" | "dark";
+
+const APPEARANCE_KEY = "pgplan-appearance";
+
+function storedAppearance(): Appearance {
+  try { return localStorage.getItem(APPEARANCE_KEY) === "light" ? "light" : "dark"; }
+  catch { return "dark"; }
+}
+
+export function App() {
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [planSource, setPlanSource] = useState("");
+  const [tab, setTab] = useState<Tab>("diagnosis");
+  const [appearance, setAppearance] = useState<Appearance>(storedAppearance);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [history, setHistory] = useState<StoredCase[]>([]);
+  const [databaseContext, setDatabaseContext] = useState<DatabaseContext | null>(null);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [workloadOpen, setWorkloadOpen] = useState(false);
+  const [investigationTitle, setInvestigationTitle] = useState("");
+  useEffect(() => { listCases().then(setHistory).catch(() => setError("Local history could not be opened.")); }, []);
+  useEffect(() => {
+    document.documentElement.dataset.appearance = appearance;
+    try { localStorage.setItem(APPEARANCE_KEY, appearance); } catch { /* Appearance remains available for this session. */ }
+  }, [appearance]);
+  useEffect(() => {
+    if (!aboutOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setAboutOpen(false); };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [aboutOpen]);
+  const reset = () => { setAnalysis(null); setPlanSource(""); setError(""); setTab("diagnosis"); setWorkloadOpen(false); setInvestigationTitle(""); };
+  const analyze = async (source: string, title: string, retentionDays = 0) => {
+    setBusy(true); setError("");
+    try {
+      const result = await analyzeOffThread(source);
+      const item: StoredCase = { id: crypto.randomUUID(), title: title.trim() || `Plan ${new Date().toLocaleString()}`, source, analysis: result, createdAt: new Date().toISOString(), build: "pgplan_v1.0.0" };
+      if (retentionDays > 0) { item.expiresAt = new Date(Date.now() + Math.min(retentionDays, 30) * 86400_000).toISOString(); await saveCase(item); setHistory(await listCases()); } setPlanSource(source); setAnalysis(result); setTab("diagnosis");
+    }
+    catch (caught) { setError(caught instanceof Error ? caught.message : "Analysis failed."); }
+    finally { setBusy(false); }
+  };
+  const openCase = (item: StoredCase) => { void analyze(item.source, item.title); };
+  const clearHistory = async () => { try { await clearCases(); setHistory([]); } catch { setError("History could not be cleared. Please retry."); } };
+  const removeCase = async (id: string) => { try { await deleteCase(id); setHistory(await listCases()); } catch { setError("Case could not be deleted. Please retry."); } };
+  const viewNode = (rank: number) => { window.location.hash = `plan/node/${rank}`; setTab("diagnosis"); window.scrollTo({ top: 0 }); };
+  const view = !analysis && workloadOpen ? <WorkloadTriageView onBack={() => setWorkloadOpen(false)} onInvestigate={(fingerprint) => { setInvestigationTitle(`Workload ${fingerprint}`); setWorkloadOpen(false); requestAnimationFrame(() => window.scrollTo({ top: 0 })); }} /> : !analysis ? <Intake key={investigationTitle} initialTitle={investigationTitle} onOpenWorkload={() => { setWorkloadOpen(true); requestAnimationFrame(() => window.scrollTo({ top: 0 })); }} onAnalyze={analyze} busy={busy} error={error} history={history} onOpenCase={openCase} onClearHistory={clearHistory} onDeleteCase={removeCase} /> : tab === "diagnosis" ? <DiagnosisWorkspace source={planSource} appearance={appearance} /> : tab === "validation" ? <FixValidationView current={analysis} /> : tab === "recommendations" ? null : tab === "context" ? <><DatabaseContextView context={databaseContext} onChange={setDatabaseContext} /><EnvironmentDriftView target={databaseContext} /></> : tab === "reference" ? <PlanReferenceView /> : <StatisticsPlannerView result={analysis} context={databaseContext} onViewNode={viewNode} />;
+  const navigation: Array<[Tab, string, string]> = [
+    ["diagnosis", "Plan", "Structure and metrics"],
+    ["recommendations", "Findings", "Ranked signals and next tests"],
+    ["planner", "Planner diagnostics", "Access paths and estimates"],
+    ["validation", "Validate fix", "Compare before and after"],
+    ["context", "Database context", "Qualify catalog hypotheses"],
+    ["reference", "Plan reference", "Fields and PostgreSQL guidance"],
+  ];
+  const nav = analysis && <nav className="focus-nav command-nav" aria-label="Analysis views">{navigation.map(([id, label, hint], index) => <button key={id} aria-label={label} aria-description={hint} aria-current={tab === id ? "page" : undefined} className={tab === id ? "active" : ""} onClick={() => setTab(id)}><span className="nav-index">{String(index + 1).padStart(2, "0")}<span aria-hidden="true">/06</span></span><span className="nav-label">{label}</span><span className="nav-hint">{hint}</span>{id === "context" && databaseContext && <span className="nav-ready" aria-label="Context applied">Applied</span>}</button>)}</nav>;
+  return <div className="shell" data-appearance={appearance}>
+    <header>
+      <Brand onHome={() => setAboutOpen(true)} />
+      <div className="header-actions">
+        <button type="button" className="appearance-switch" role="switch" aria-label="Dark appearance" aria-checked={appearance === "dark"} onClick={() => setAppearance((current) => current === "dark" ? "light" : "dark")}>
+          <span className="appearance-switch-track" aria-hidden="true"><i /></span>
+          <span>Dark</span>
+        </button>
+        <span className="privacy-state"><i />Browser-local analysis</span>
+        {analysis && <button className="header-new" onClick={reset}>New analysis</button>}
+      </div>
+    </header>
+    {nav}
+    <main>{view}{analysis && <div hidden={tab !== "recommendations"}><ContextualFindingsView result={analysis} context={databaseContext} onViewNode={viewNode} /></div>}</main>
+    <footer><span>Deterministic analysis</span><span>Browser-local by design</span><span>TEXT and FORMAT JSON</span></footer>
+    {aboutOpen && <div className="about-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setAboutOpen(false); }}>
+      <section className="about-product" role="dialog" aria-modal="true" aria-labelledby="about-product-title">
+        <button className="about-close" aria-label="Close product information" onClick={() => setAboutOpen(false)}>×</button>
+        <div className="section-kicker">PostgreSQL performance diagnostics</div>
+        <h2 id="about-product-title">Understand the evidence. Test the fix.</h2>
+        <p>PGPlanWorkbench turns PostgreSQL EXPLAIN plans into an evidence-led investigation for developers, DBAs, and architects.</p>
+        <dl>
+          <div><dt>What it does</dt><dd>Locates expensive operations, estimate drift, spills, access-path concerns, and plan-visible type coercion.</dd></div>
+          <div><dt>Safety boundary</dt><dd>Your plan stays in this browser. Nothing is sent to an AI provider or external service.</dd></div>
+          <div><dt>Evidence boundary</dt><dd>Findings are deterministic signals and hypotheses, not proof that a proposed change will improve production.</dd></div>
+        </dl>
+        <p className="about-disclaimer">Provided as is, without warranty. Validate findings independently; do not use this tool as the sole basis for a production change. To the extent permitted by law, the PostgreSQL License disclaims warranties and limits liability.</p>
+        <p><a href="/LICENSE" target="_blank" rel="noreferrer">PostgreSQL License</a> · <a href="/THIRD_PARTY_NOTICES.md" target="_blank" rel="noreferrer">Third-party notices</a></p>
+      </section>
+    </div>}
+  </div>;
+}
