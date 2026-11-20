@@ -2,19 +2,60 @@
 
 Free, open-source PostgreSQL execution-plan review application. Inspect the plan. Test the change. Verify the result.
 
-## Run locally
+## Install and run
 
 Application version: **1.0.0**. Source is available; a versioned GitHub Release and hosted release-gate validation are not yet published. Local validation is not a security certification.
 
 Download the complete source ZIP using GitHub's **Code → Download ZIP**, or clone the repository. Extract it and open a terminal in the folder containing `package.json`. Individual files are not a runnable download. Use Node.js 24 and npm.
 
+### macOS — Terminal
+
+Install Node.js 24 with npm from [nodejs.org](https://nodejs.org/). Download and extract the complete source ZIP. Replace the path below with your extracted folder:
+
 ```sh
+cd "$HOME/Downloads/PGPlanWorkbench-main"
+node --version
+npm --version
 npm ci --ignore-scripts
 npm run build
 npm run preview -- --host 127.0.0.1 --port 4189 --strictPort
 ```
 
+### Windows — PowerShell
+
+Install Node.js 24 with npm from [nodejs.org](https://nodejs.org/), then open a new PowerShell window. Extract the ZIP and replace the path below with the folder containing `package.json`. Use `npm.cmd` to avoid PowerShell script-policy issues; no policy change is needed.
+
+```powershell
+Set-Location "$env:USERPROFILE\Downloads\PGPlanWorkbench-main"
+node --version
+npm.cmd --version
+npm.cmd ci --ignore-scripts
+npm.cmd run build
+npm.cmd run preview -- --host 127.0.0.1 --port 4189 --strictPort
+```
+
 Open http://127.0.0.1:4189/ and keep the terminal running. Do not open `index.html` using a `file://` URL. For development use `npm run dev -- --host 127.0.0.1` instead.
+
+Stop with Ctrl+C. If port 4189 is occupied, use `--port 4190` and open the matching address. An ENOENT/package.json error means the terminal is in the wrong folder. Node/npm are needed on the build machine; no PostgreSQL installation or database credentials are required to run the app.
+
+## Production hosting — macOS or Windows build machine
+
+The commands above run a local preview of a production build, not a production server. For organizational deployment:
+
+1. Use a reviewed, versioned source revision and the same locked install/build commands above on either operating system.
+2. Deploy only the contents of `dist/` to an organization-approved HTTPS static web server, at the domain root. Do not expose source directories, `.git`, dependencies or local plans. Current absolute asset/license paths are not configured for subdirectory hosting.
+3. Configure JavaScript module/worker MIME types and these response headers on the real host:
+
+```text
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: no-referrer
+```
+
+4. Configure authentication/access restrictions where required, prevent stale HTML caching, and verify Plan, Grid, Findings, Validate Fix and license links in supported browsers. Review worker loading and headers at the actual HTTPS origin; preview headers do not configure your web server.
+5. Keep the prior reviewed `dist/` deployment to roll back atomically. Never include browser history or exported plans in deployment backups.
+
+The web-server product and operating-system service configuration are deployment-specific and not automated by this repository. Follow your organization's security approval process. See [Vite static deployment guidance](https://vite.dev/guide/static-deploy.html); do not use `vite preview` as a production hosting service.
 
 ## Use
 

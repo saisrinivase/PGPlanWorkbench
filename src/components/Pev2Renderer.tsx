@@ -37,6 +37,15 @@ export function Pev2Renderer({ planSource, appearance }: { planSource: string; a
       #pev2-root :where(pre,code), #pev2-root :where(pre,code) * { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; }
       .plan-container, .diagram-container { background:#f8f9f7 !important; }
       .plan-grid { background:#fff !important; }
+      /* Keep the outline's metric column visible even for deeply nested plans. */
+      .plan-diagram table:has(.plan-tree), .plan-diagram table:has(tr.node) { width:calc(100% - 8px); table-layout:fixed; font-size:12px; line-height:1.4; }
+      .plan-diagram tr.node > td { padding:2px 3px; vertical-align:middle; font-size:12px !important; line-height:1.4; }
+      .plan-diagram tr.node > td:first-child { width:38px; }
+      .plan-diagram tr.node > td:nth-child(2) { width:auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .plan-diagram tr.node > td:nth-child(2) b { font-weight:500; }
+      .plan-diagram tr.node > td:last-child { width:30%; }
+      .plan-diagram tr.node .progress { min-width:0; width:100%; background-color:#dfe4e7 !important; }
+      #pev2-root[data-appearance="dark"] .plan-diagram tr.node .progress { background-color:#405363 !important; }
       #pev2-root.pgplan-grid-view { height:auto !important; overflow:visible !important; }
       #pev2-root.pgplan-grid-view .plan-container,
       #pev2-root.pgplan-grid-view .plan-container .tab-content,
